@@ -75,22 +75,26 @@
         <h2><span style="color: #66ffcc;">&#128184;</span> Podsumowanie sesji: {{ session_id }}</h2>
         <p><b>Data utworzenia:</b> {{ session['created'] }}</p>
 
-        {% for name, pdata in session['players'].items() %}
-            <div class="player">
-                <h4><span style="color: #ffd580;">&#128100;</span> {{ name }}</h4>
-                <p><b>Start:</b> {{ pdata['start'] }}<br>
-                <b>Koniec:</b> {{ pdata['end'] }}</p>
-                {% if player_costs.get(name) %}
-                    <p class="cost"><b>Koszt gracza:</b> {{ player_costs[name] }} gold coins</p>
-                {% endif %}
-                {% if player_profit.get(name) %}
-                    <p class="profit"><b>Zysk gracza (loot):</b> {{ player_profit[name] }} gold coins</p>
-                {% endif %}
-                {% if profit_distribution.get(name) is not none %}
-                    <p class="share"><b>Saldo po podziale:</b> {{ profit_distribution[name] }} gold coins</p>
-                {% endif %}
-            </div>
-        {% endfor %}
+        {% if session and 'players' in session %}
+            {% for name, pdata in session['players'].items() %}
+                <div class="player">
+                    <h4><span style="color: #ffd580;">&#128100;</span> {{ name }}</h4>
+                    <p><b>Start:</b> {{ pdata['start'] }}<br>
+                    <b>Koniec:</b> {{ pdata['end'] }}</p>
+                    {% if player_costs.get(name) %}
+                        <p class="cost"><b>Koszt gracza:</b> {{ player_costs[name] }} gold coins</p>
+                    {% endif %}
+                    {% if player_profit.get(name) %}
+                        <p class="profit"><b>Zysk gracza (loot):</b> {{ player_profit[name] }} gold coins</p>
+                    {% endif %}
+                    {% if profit_distribution.get(name) is not none %}
+                        <p class="share"><b>Saldo po podziale:</b> {{ profit_distribution[name] }} gold coins</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Brak danych graczy dla tej sesji lub dane są nieprawidłowe.</p>
+        {% endif %}
 
         <h3><span style="color: #66ffcc;">&#128176;</span> Zestawienie zużytych run</h3>
         <table>
@@ -98,16 +102,22 @@
                 <th>Gracz</th>
                 <th>Zużycie</th>
             </tr>
-            {% for name, runy in used_run_data.items() %}
-                <tr>
-                    <td>{{ name }}</td>
-                    <td>
-                        {% for typ, liczba in runy.items() %}
-                            {{ liczba }} {{ typ }}{% if not loop.last %}, {% endif %}
-                        {% endfor %}
-                    </td>
-                </tr>
-            {% endfor %}
+            {% if session and 'players' in session %}
+                {% for name, runy in used_run_data.items() %}
+                    {% if name in session['players'] %}
+                        <tr>
+                            <td>{{ name }}</td>
+                            <td>
+                                {% for typ, liczba in runy.items() %}
+                                    {{ liczba }} {{ typ }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="2">Brak danych o zużytych runach.</td></tr>
+            {% endif %}
         </table>
 
         {% if total_session_cost %}
@@ -133,7 +143,9 @@
             <h3><span style="color: #66ffcc;">&#128176;</span> Podział zysku netto:</h3>
             <ul>
                 {% for name, saldo in profit_distribution.items() %}
-                    <li><b>{{ name }}:</b> <span class="share">{{ saldo }}</span> gold coins</li>
+                    {% if session and 'players' in session and name in session['players'] %}
+                        <li><b>{{ name }}:</b> <span class="share">{{ saldo }}</span> gold coins</li>
+                    {% endif %}
                 {% endfor %}
             </ul>
         {% endif %}
