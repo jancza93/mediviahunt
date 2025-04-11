@@ -75,26 +75,22 @@
         <h2><span style="color: #66ffcc;">&#128184;</span> Podsumowanie sesji: {{ session_id }}</h2>
         <p><b>Data utworzenia:</b> {{ session['created'] }}</p>
 
-        {% if session and 'players' in session %}
-            {% for name, pdata in session['players'].items() %}
-                <div class="player">
-                    <h4><span style="color: #ffd580;">&#128100;</span> {{ name }}</h4>
-                    <p><b>Start:</b> {{ pdata['start'] }}<br>
-                    <b>Koniec:</b> {{ pdata['end'] }}</p>
-                    {% if player_costs.get(name) %}
-                        <p class="cost"><b>Koszt gracza:</b> {{ player_costs[name] }} gold coins</p>
-                    {% endif %}
-                    {% if player_profit.get(name) %}
-                        <p class="profit"><b>Zysk gracza (loot):</b> {{ player_profit[name] }} gold coins</p>
-                    {% endif %}
-                    {% if profit_distribution.get(name) is not none %}
-                        <p class="share"><b>Saldo po podziale:</b> {{ profit_distribution[name] }} gold coins</p>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>Brak danych graczy dla tej sesji lub dane są nieprawidłowe.</p>
-        {% endif %}
+        {% for name, pdata in session['players'].items() %}
+            <div class="player">
+                <h4><span style="color: #ffd580;">&#128100;</span> {{ name }}</h4>
+                <p><b>Start:</b> {{ pdata['start'] }}<br>
+                <b>Koniec:</b> {{ pdata['end'] }}</p>
+                {% if player_costs.get(name) %}
+                    <p class="cost"><b>Koszt gracza:</b> {{ "{:.2f}".format(player_costs[name]) }} gold coins</p>
+                {% endif %}
+                {% if player_profit.get(name) %}
+                    <p class="profit"><b>Zysk gracza (loot):</b> {{ "{:.2f}".format(player_profit[name]) }} gold coins</p>
+                {% endif %}
+                {% if profit_distribution.get(name) is not none %}
+                    <p class="share"><b>Saldo po podziale:</b> {{ "{:.2f}".format(profit_distribution[name]) }} gold coins</p>
+                {% endif %}
+            </div>
+        {% endfor %}
 
         <h3><span style="color: #66ffcc;">&#128176;</span> Zestawienie zużytych run</h3>
         <table>
@@ -102,39 +98,33 @@
                 <th>Gracz</th>
                 <th>Zużycie</th>
             </tr>
-            {% if session and 'players' in session %}
-                {% for name, runy in used_run_data.items() %}
-                    {% if name in session['players'] %}
-                        <tr>
-                            <td>{{ name }}</td>
-                            <td>
-                                {% for typ, liczba in runy.items() %}
-                                    {{ liczba }} {{ typ }}{% if not loop.last %}, {% endif %}
-                                {% endfor %}
-                            </td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            {% else %}
-                <tr><td colspan="2">Brak danych o zużytych runach.</td></tr>
-            {% endif %}
+            {% for name, runy in used_run_data.items() %}
+                <tr>
+                    <td>{{ name }}</td>
+                    <td>
+                        {% for typ, liczba in runy.items() %}
+                            {{ liczba }} {{ typ }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
         </table>
 
-        {% if total_session_cost %}
-            <h3><span style="color: #66ffcc;">&#128176;</span> Łączny koszt sesji: <span class="cost">{{ total_session_cost }}</span> gold coins</h3>
+        {% if total_session_cost > 0 %}
+            <h3><span style="color: #66ffcc;">&#128176;</span> Łączny koszt sesji: <span class="cost">{{ "{:.2f}".format(total_session_cost) }}</span> gold coins</h3>
         {% endif %}
 
-        {% if total_session_profit %}
-            <h3><span style="color: #66ffcc;">&#128176;</span> Łączny zysk z łupów: <span class="profit">{{ total_session_profit }}</span> gold coins</h3>
+        {% if total_session_profit > 0 %}
+            <h3><span style="color: #66ffcc;">&#128176;</span> Łączny zysk z łupów: <span class="profit">{{ "{:.2f}".format(total_session_profit) }}</span> gold coins</h3>
         {% endif %}
 
         <h3><span style="color: #66ffcc;">&#128176;</span> Zysk netto sesji:
             {% if net_session_profit > 0 %}
-                <span class="net-profit-positive">{{ net_session_profit }}</span>
+                <span class="net-profit-positive">{{ "{:.2f}".format(net_session_profit) }}</span>
             {% elif net_session_profit < 0 %}
-                <span class="net-profit-negative">{{ net_session_profit }}</span>
+                <span class="net-profit-negative">{{ "{:.2f}".format(net_session_profit) }}</span>
             {% else %}
-                <span class="net-profit-neutral">{{ net_session_profit }}</span>
+                <span class="net-profit-neutral">{{ "{:.2f}".format(net_session_profit) }}</span>
             {% endif %}
             gold coins
         </h3>
@@ -143,9 +133,7 @@
             <h3><span style="color: #66ffcc;">&#128176;</span> Podział zysku netto:</h3>
             <ul>
                 {% for name, saldo in profit_distribution.items() %}
-                    {% if session and 'players' in session and name in session['players'] %}
-                        <li><b>{{ name }}:</b> <span class="share">{{ saldo }}</span> gold coins</li>
-                    {% endif %}
+                    <li><b>{{ name }}:</b> <span class="share">{{ "{:.2f}".format(saldo) }}</span> gold coins</li>
                 {% endfor %}
             </ul>
         {% endif %}
