@@ -19,8 +19,8 @@ DEFAULT_PRICES = {
     "piercing bolts": 15,
     "hunting bolts": 5,
     "purity ring [min]": 234,
-    "ring": 234, # Dodaj alias dla "purity ring [min]" jeśli użytkownik wpisze krócej
-    "gold": 1 # Przyjmujemy, że "gold" ma wartość 1
+    "ring": 234,
+    "gold": 1
 }
 
 def load_data():
@@ -55,18 +55,17 @@ def parse_loot(s: str):
             parts = item.strip().split(' ')
             if len(parts) >= 3:
                 amount = int(parts[0])
-                name = " ".join(parts[1:-1]).lower() # Obsługa nazw wieloczłonowych
+                name = " ".join(parts[1:-1]).lower()
                 value = int(parts[-1])
                 loot[name] = {"amount": amount, "value": value}
             elif len(parts) == 2:
                 amount = int(parts[0])
                 name = parts[1].lower()
-                # Jeśli nie podano wartości, możemy spróbować użyć domyślnej ceny
                 if name in DEFAULT_PRICES:
                     loot[name] = {"amount": amount, "value": DEFAULT_PRICES.get(name, 0)}
                 else:
                     print(f"Uwaga: Nieznany przedmiot '{name}' bez podanej wartości.")
-            elif len(parts) == 3: # ilość nazwa wartość
+            elif len(parts) == 3:
                 amount = int(parts[0])
                 name = parts[1].lower()
                 value = int(parts[2])
@@ -100,7 +99,7 @@ def submit():
     name = request.form['name']
     start = request.form['start']
     end = request.form['end']
-    loot_str = request.form.get('loot', '') # Pobierz dane o łupie
+    loot_str = request.form.get('loot', '')
 
     data = load_data()
     if session_id in data:
@@ -117,6 +116,8 @@ def summary(session_id):
     player_profit = {}
     total_session_cost = 0
     total_session_profit = 0
+    num_players = len(session.get("players", {}))
+    profit_per_player = 0
 
     for name, pdata in session.get("players", {}).items():
         start_supplies = parse_supplies(pdata.get("start", ""))
@@ -140,7 +141,7 @@ def summary(session_id):
         player_costs[name] = player_cost
         total_session_cost += player_cost
 
-        # Oblicz zysk
+        # Oblicz zysk gracza
         for item_name, loot_data in player_loot.items():
             player_earned += loot_data.get("amount", 0) * loot_data.get("value", 0)
 
@@ -148,6 +149,9 @@ def summary(session_id):
         total_session_profit += player_earned
 
     net_session_profit = total_session_profit - total_session_cost
+
+    if num_players > 0:
+        profit_per_player = net_session_profit / num_players
 
     return render_template(
         "summary.html",
@@ -159,6 +163,7 @@ def summary(session_id):
         total_session_cost=total_session_cost,
         total_session_profit=total_session_profit,
         net_session_profit=net_session_profit,
+        profit_per_player=profit_per_player,
         default_prices=DEFAULT_PRICES
     )
 
