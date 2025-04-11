@@ -122,12 +122,12 @@ def summary(session_id):
     data = load_data()
     session = data.get(session_id, {})
     used_run_data = {}
-    player_costs = {}
-    player_profit = {}
-    total_session_cost = 0
-    total_session_profit = 0
-    net_session_profit = 0
-    profit_distribution = {}
+    player_costs_raw = {}
+    player_profit_raw = {}
+    total_session_cost_raw = 0
+    total_session_profit_raw = 0
+    net_session_profit_raw = 0
+    profit_distribution_raw = {}
     num_players = len(session.get("players", {}))
 
     for name, pdata in session.get("players", {}).items():
@@ -149,34 +149,34 @@ def summary(session_id):
                 player_cost += used_count * DEFAULT_PRICES[item_name]
 
         used_run_data[name] = used_run
-        player_costs[name] = player_cost
-        total_session_cost += player_cost
+        player_costs_raw[name] = player_cost
+        total_session_cost_raw += player_cost
 
         # Oblicz zysk gracza (loot)
         for item_name, loot_data in player_loot.items():
             player_earned += loot_data.get("amount", 0) * loot_data.get("value", 0)
 
-        player_profit[name] = player_earned
-        total_session_profit += player_earned
+        player_profit_raw[name] = player_earned
+        total_session_profit_raw += player_earned
 
-    net_session_profit = total_session_profit - total_session_cost
+    net_session_profit_raw = total_session_profit_raw - total_session_cost_raw
 
     if num_players > 0:
-        equal_share = net_session_profit / num_players
+        equal_share = net_session_profit_raw / num_players
         for name in session.get("players", {}).keys():
-            profit_distribution[name] = player_costs.get(name, 0) + equal_share
+            profit_distribution_raw[name] = player_costs_raw.get(name, 0) + equal_share
 
     return render_template(
         "summary.html",
         session=session,
         session_id=session_id,
         used_run_data=used_run_data,
-        player_costs={k: format_number(v) for k, v in player_costs.items()},
-        player_profit={k: format_number(v) for k, v in player_profit.items()},
-        total_session_cost=format_number(total_session_cost),
-        total_session_profit=format_number(total_session_profit),
-        net_session_profit=format_number(net_session_profit),
-        profit_distribution={k: format_number(v) for k, v in profit_distribution.items()},
+        player_costs={k: format_number(v) for k, v in player_costs_raw.items()},
+        player_profit={k: format_number(v) for k, v in player_profit_raw.items()},
+        total_session_cost=format_number(total_session_cost_raw),
+        total_session_profit=format_number(total_session_profit_raw),
+        net_session_profit=format_number(net_session_profit_raw),
+        profit_distribution={k: format_number(v) for k, v in profit_distribution_raw.items()},
         default_prices=DEFAULT_PRICES
     )
 
