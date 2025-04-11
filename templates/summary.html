@@ -62,6 +62,10 @@
         .net-profit-neutral {
             color: #e0e0e0;
         }
+        .share {
+            font-weight: bold;
+            color: #00bfff;
+        }
     </style></head><body>
     <div class="container">
         <h2><span style="color: #66ffcc;">&#128184;</span> Podsumowanie sesji: {{ session_id }}</h2>
@@ -76,7 +80,7 @@
                     <p class="cost"><b>Koszt gracza:</b> {{ "{:.2f}".format(player_costs[name]) }} gold coins</p>
                 {% endif %}
                 {% if player_profit.get(name) %}
-                    <p class="profit"><b>Zysk gracza:</b> {{ "{:.2f}".format(player_profit[name]) }} gold coins</p>
+                    <p class="profit"><b>Zysk gracza (loot):</b> {{ "{:.2f}".format(player_profit[name]) }} gold coins</p>
                 {% endif %}
             </div>
         {% endfor %}
@@ -104,7 +108,7 @@
         {% endif %}
 
         {% if total_session_profit > 0 %}
-            <h3><span style="color: #66ffcc;">&#128176;</span> Łączny zysk sesji: <span class="profit">{{ "{:.2f}".format(total_session_profit) }}</span> gold coins</h3>
+            <h3><span style="color: #66ffcc;">&#128176;</span> Łączny zysk z łupów: <span class="profit">{{ "{:.2f}".format(total_session_profit) }}</span> gold coins</h3>
         {% endif %}
 
         <h3><span style="color: #66ffcc;">&#128176;</span> Zysk netto sesji:
@@ -117,4 +121,8 @@
             {% endif %}
             gold coins
         </h3>
+
+        {% if profit_per_player != 0 %}
+            <h3><span style="color: #66ffcc;">&#128176;</span> Równy podział zysku netto (na gracza): <span class="share">{{ "{:.2f}".format(profit_per_player) }}</span> gold coins</h3>
+        {% endif %}
     </div></body></html>
