@@ -82,6 +82,9 @@
                 {% if player_profit.get(name) %}
                     <p class="profit"><b>Zysk gracza (loot):</b> {{ "{:.2f}".format(player_profit[name]) }} gold coins</p>
                 {% endif %}
+                {% if profit_distribution.get(name) is not none %}
+                    <p class="share"><b>Saldo po podziale:</b> {{ "{:.2f}".format(profit_distribution[name]) }} gold coins</p>
+                {% endif %}
             </div>
         {% endfor %}
 
@@ -122,7 +125,12 @@
             gold coins
         </h3>
 
-        {% if profit_per_player != 0 %}
-            <h3><span style="color: #66ffcc;">&#128176;</span> Równy podział zysku netto (na gracza): <span class="share">{{ "{:.2f}".format(profit_per_player) }}</span> gold coins</h3>
+        {% if profit_distribution %}
+            <h3><span style="color: #66ffcc;">&#128176;</span> Podział zysku netto:</h3>
+            <ul>
+                {% for name, saldo in profit_distribution.items() %}
+                    <li><b>{{ name }}:</b> <span class="share">{{ "{:.2f}".format(saldo) }}</span> gold coins</li>
+                {% endfor %}
+            </ul>
         {% endif %}
     </div></body></html>
