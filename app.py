@@ -5,6 +5,23 @@ from datetime import datetime
 app = Flask(__name__)
 DATA_FILE = "sessions.json"
 
+# Stałe z cenami (możesz przenieść do oddzielnego pliku konfiguracyjnego)
+DEFAULT_PRICES = {
+    "uh": 145,
+    "sd": 330,
+    "ice": 125,
+    "hmm": 85,
+    "explo": 260,
+    "pot": 850,
+    "gfb": 190,
+    "heavy ammo": 55,
+    "piercing arrows": 12,
+    "hunting arrows": 4,
+    "piercing bolts": 15,
+    "hunting bolts": 5,
+    "purity ring [min]": 234,
+}
+
 def load_data():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "r", encoding="utf-8") as f:
@@ -17,6 +34,18 @@ def save_data(data):
 
 def generate_session_id():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+def parse_supplies(s: str):
+    result = {}
+    for part in s.split(','):
+        try:
+            num, name = part.strip().split(' ', 1)
+            result[name.lower()] = int(num)
+        except ValueError:
+            continue
+        except IndexError:
+            continue
+    return result
 
 @app.route('/')
 def index():
@@ -50,34 +79,42 @@ def submit():
         save_data(data)
     return redirect(url_for('summary', session_id=session_id))
 
-def parse_supplies(s: str):
-    result = {}
-    for part in s.split(','):
-        try:
-            num, name = part.strip().split(' ', 1)
-            result[name.lower()] = int(num)
-        except:
-            continue
-    return result
-
 @app.route('/summary/<session_id>')
 def summary(session_id):
     data = load_data()
     session = data.get(session_id, {})
-    used = {}
+    used_run_data = {}
+    player_costs = {}
+    total_session_cost = 0
 
     for name, pdata in session.get("players", {}).items():
-        start = parse_supplies(pdata.get("start", ""))
-        end = parse_supplies(pdata.get("end", ""))
+        start_supplies = parse_supplies(pdata.get("start", ""))
+        end_supplies = parse_supplies(pdata.get("end", ""))
         used_run = {}
+        player_cost = 0
 
-        all_keys = set(start.keys()) | set(end.keys())
-        for k in all_keys:
-            used_run[k] = start.get(k, 0) - end.get(k, 0)
+        all_keys = set(start_supplies.keys()) | set(end_supplies.keys())
+        for item_name in all_keys:
+            start_count = start_supplies.get(item_name, 0)
+            end_count = end_supplies.get(item_name, 0)
+            used_count = start_count - end_count
+            if used_count > 0 and item_name in DEFAULT_PRICES:
+                used_run[item_name] = used_count
+                player_cost += used_count * DEFAULT_PRICES[item_name]
 
-        used[name] = used_run
+        used_run_data[name] = used_run
+        player_costs[name] = player_cost
+        total_session_cost += player_cost
 
-    return render_template("summary.html", session=session, session_id=session_id, used_run_data=used)
+    return render_template(
+        "summary.html",
+        session=session,
+        session_id=session_id,
+        used_run_data=used_run_data,
+        player_costs=player_costs,
+        total_session_cost=total_session_cost,
+        default_prices=DEFAULT_PRICES  # Możesz przekazać ceny, jeśli chcesz je wyświetlić
+    )
 
 @app.route('/data/<session_id>')
 def data_json(session_id):
