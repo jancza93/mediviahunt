@@ -60,16 +60,16 @@
         <form action="{{ url_for('submit') }}" method="post">
             <input type="hidden" name="session_id" value="{{ session_id }}">
 
-            <label for="name">Nazwa gracza:</label>
+            <label for="name">Nick:</label>
             <input type="text" id="name" name="name" required>
 
-            <label for="start">Zużyte przedmioty na starcie (np. 10 uh, 2 pot):</label>
+            <label for="start">Przedmioty na starcie(runy,amunicja):</label>
             <input type="text" id="start" name="start">
 
-            <label for="end">Zużyte przedmioty na końcu (np. 5 uh, 1 pot):</label>
+            <label for="end">Przedmioty na końcu (runy, amunicja):</label>
             <input type="text" id="end" name="end">
 
-            <label for="loot">Zdobyte przedmioty i ich wartość (np. 1 ring 250, 5 gold 50):</label>
+            <label for="loot">Loot:</label>
             <input type="text" id="loot" name="loot">
 
             <button type="submit">Zatwierdź</button>
