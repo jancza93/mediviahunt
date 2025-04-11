@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
+<!DOCTYPE html><html lang="pl"><head>
     <meta charset="UTF-8">
     <title>Podsumowanie sesji</title>
     <style>
@@ -47,22 +45,27 @@
         th {
             background-color: #333;
         }
-    </style>
-</head>
-<body>
+        .cost {
+            font-weight: bold;
+            color: #ff9800;
+        }
+    </style></head><body>
     <div class="container">
-        <h2>📊 Podsumowanie sesji: {{ session_id }}</h2>
+        <h2><span style="color: #66ffcc;">&#128184;</span> Podsumowanie sesji: {{ session_id }}</h2>
         <p><b>Data utworzenia:</b> {{ session['created'] }}</p>
 
         {% for name, pdata in session['players'].items() %}
             <div class="player">
-                <h4>🧙 {{ name }}</h4>
+                <h4><span style="color: #ffd580;">&#128100;</span> {{ name }}</h4>
                 <p><b>Start:</b> {{ pdata['start'] }}<br>
                 <b>Koniec:</b> {{ pdata['end'] }}</p>
+                {% if player_costs.get(name) %}
+                    <p class="cost"><b>Koszt gracza:</b> {{ "{:.2f}".format(player_costs[name]) }} gold coins</p>
+                {% endif %}
             </div>
         {% endfor %}
 
-        <h3>🧮 Zestawienie zużytych run</h3>
+        <h3><span style="color: #66ffcc;">&#128176;</span> Zestawienie zużytych run</h3>
         <table>
             <tr>
                 <th>Gracz</th>
@@ -79,6 +82,8 @@
                 </tr>
             {% endfor %}
         </table>
-    </div>
-</body>
-</html>
+
+        {% if total_session_cost > 0 %}
+            <h3><span style="color: #66ffcc;">&#128176;</span> Łączny koszt sesji: <span class="cost">{{ "{:.2f}".format(total_session_cost) }}</span> gold coins</h3>
+        {% endif %}
+    </div></body></html>
