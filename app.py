@@ -171,12 +171,12 @@ def summary(session_id):
         session=session,
         session_id=session_id,
         used_run_data=used_run_data,
-        player_costs=player_costs,
-        player_profit=player_profit,
-        total_session_cost=total_session_cost,
-        total_session_profit=total_session_profit,
-        net_session_profit=net_session_profit,
-        profit_distribution=profit_distribution,
+        player_costs={k: format_number(v) for k, v in player_costs.items()},
+        player_profit={k: format_number(v) for k, v in player_profit.items()},
+        total_session_cost=format_number(total_session_cost),
+        total_session_profit=format_number(total_session_profit),
+        net_session_profit=format_number(net_session_profit),
+        profit_distribution={k: format_number(v) for k, v in profit_distribution.items()},
         default_prices=DEFAULT_PRICES
     )
 
