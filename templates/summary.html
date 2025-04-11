@@ -59,6 +59,9 @@
         .net-profit-negative {
             color: #f07070;
         }
+        .net-profit-neutral {
+            color: #e0e0e0;
+        }
     </style></head><body>
     <div class="container">
         <h2><span style="color: #66ffcc;">&#128184;</span> Podsumowanie sesji: {{ session_id }}</h2>
@@ -101,4 +104,17 @@
         {% endif %}
 
         {% if total_session_profit > 0 %}
-            <h3><span style="color: #66ffcc;">&#128176;</span>
+            <h3><span style="color: #66ffcc;">&#128176;</span> Łączny zysk sesji: <span class="profit">{{ "{:.2f}".format(total_session_profit) }}</span> gold coins</h3>
+        {% endif %}
+
+        <h3><span style="color: #66ffcc;">&#128176;</span> Zysk netto sesji:
+            {% if net_session_profit > 0 %}
+                <span class="net-profit-positive">{{ "{:.2f}".format(net_session_profit) }}</span>
+            {% elif net_session_profit < 0 %}
+                <span class="net-profit-negative">{{ "{:.2f}".format(net_session_profit) }}</span>
+            {% else %}
+                <span class="net-profit-neutral">{{ "{:.2f}".format(net_session_profit) }}</span>
+            {% endif %}
+            gold coins
+        </h3>
+    </div></body></html>
