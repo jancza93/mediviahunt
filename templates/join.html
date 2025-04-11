@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Dołącz do sesji</title>
+    <title>Dołącz do sesji: {{ session_id }}</title>
     <style>
         body {
             background-color: #1e1e1e;
@@ -19,53 +19,60 @@
             box-shadow: 0 0 10px #000;
         }
         h2 {
+            color: #66ffcc;
             text-align: center;
             margin-bottom: 20px;
-            color: #66ffcc;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
         }
         label {
-            display: block;
-            margin: 10px 0 5px;
+            margin-top: 10px;
+            color: #e0e0e0;
         }
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            background-color: #1e1e1e;
-            color: #ffffff;
+        input[type="text"] {
+            padding: 8px;
+            margin-top: 5px;
             border: 1px solid #444;
-            border-radius: 6px;
+            border-radius: 4px;
+            background-color: #333;
+            color: #e0e0e0;
         }
-        button {
+        button[type="submit"] {
             margin-top: 20px;
-            width: 100%;
-            background-color: #66ffcc;
-            color: #000;
-            padding: 10px;
+            padding: 10px 15px;
             border: none;
-            border-radius: 6px;
-            font-weight: bold;
+            border-radius: 4px;
+            background-color: #66ffcc;
+            color: #1e1e1e;
             cursor: pointer;
+            font-weight: bold;
         }
-        button:hover {
-            background-color: #55e6b0;
+        button[type="submit"]:hover {
+            background-color: #80ffdb;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>🧙‍♂️ Dołącz do sesji: {{ session_id }}</h2>
-        <form action="/submit" method="post">
+        <h2>Dołącz do sesji: {{ session_id }}</h2>
+        <form action="{{ url_for('submit') }}" method="post">
             <input type="hidden" name="session_id" value="{{ session_id }}">
-            <label for="name">Nick postaci:</label>
-            <input type="text" id="name" name="name" placeholder="np. Gandalf">
 
-            <label for="start">Start runy:</label>
-            <textarea id="start" name="start" rows="3" placeholder="np. 100 sd, 50 uh"></textarea>
+            <label for="name">Nazwa gracza:</label>
+            <input type="text" id="name" name="name" required>
 
-            <label for="end">Koniec runy:</label>
-            <textarea id="end" name="end" rows="3" placeholder="np. 10 sd, 5 uh"></textarea>
+            <label for="start">Zużyte przedmioty na starcie (np. 10 uh, 2 pot):</label>
+            <input type="text" id="start" name="start">
 
-            <button type="submit">💾 Wyślij moje runy</button>
+            <label for="end">Zużyte przedmioty na końcu (np. 5 uh, 1 pot):</label>
+            <input type="text" id="end" name="end">
+
+            <label for="loot">Zdobyte przedmioty i ich wartość (np. 1 ring 250, 5 gold 50):</label>
+            <input type="text" id="loot" name="loot">
+
+            <button type="submit">Zatwierdź</button>
         </form>
     </div>
 </body>
