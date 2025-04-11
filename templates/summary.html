@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Podsumowanie sesji</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #2c2c2c;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px #000;
+        }
+        h2, h3 {
+            color: #66ffcc;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .player {
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .player h4 {
+            margin: 0 0 10px;
+            color: #ffd580;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #444;
+            text-align: left;
+        }
+        th {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📊 Podsumowanie sesji: {{ session_id }}</h2>
+        <p><b>Data utworzenia:</b> {{ session['created'] }}</p>
+
+        {% for name, pdata in session['players'].items() %}
+            <div class="player">
+                <h4>🧙 {{ name }}</h4>
+                <p><b>Start:</b> {{ pdata['start'] }}<br>
+                <b>Koniec:</b> {{ pdata['end'] }}</p>
+            </div>
+        {% endfor %}
+
+        <h3>🧮 Zestawienie zużytych run</h3>
+        <table>
+            <tr>
+                <th>Gracz</th>
+                <th>Zużycie</th>
+            </tr>
+            {% for name, runy in used_run_data.items() %}
+                <tr>
+                    <td>{{ name }}</td>
+                    <td>
+                        {% for typ, liczba in runy.items() %}
+                            {{ liczba }} {{ typ }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Medivia Hunt Helper – Start</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #2c2c2c;
+            padding: 40px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 0 15px #000;
+        }
+        h1 {
+            color: #66ffcc;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #bbbbbb;
+            margin-bottom: 30px;
+        }
+        button {
+            background-color: #66ffcc;
+            color: #000;
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #55e6b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Medivia Hunt Helper</h1>
+        <p>🧙‍♂️ Zorganizuj drużynę i sprawdź, kto ile zużył run!</p>
+        <form action="/create" method="post">
+            <button type="submit">➕ Utwórz nową sesję</button>
+        </form>
+    </div>
+</body>
+</html>

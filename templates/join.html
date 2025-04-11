@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dołącz do sesji</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #2c2c2c;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px #000;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #66ffcc;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            border: 1px solid #444;
+            border-radius: 6px;
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #66ffcc;
+            color: #000;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #55e6b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🧙‍♂️ Dołącz do sesji: {{ session_id }}</h2>
+        <form action="/submit" method="post">
+            <input type="hidden" name="session_id" value="{{ session_id }}">
+            <label for="name">Nick postaci:</label>
+            <input type="text" id="name" name="name" placeholder="np. Gandalf">
+
+            <label for="start">Start runy:</label>
+            <textarea id="start" name="start" rows="3" placeholder="np. 100 sd, 50 uh"></textarea>
+
+            <label for="end">Koniec runy:</label>
+            <textarea id="end" name="end" rows="3" placeholder="np. 10 sd, 5 uh"></textarea>
+
+            <button type="submit">💾 Wyślij moje runy</button>
+        </form>
+    </div>
+</body>
+</html>
