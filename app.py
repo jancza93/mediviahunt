@@ -14,6 +14,7 @@ DEFAULT_PRICES = {
     "pot": 850,
     "gfb": 190,
     "heavy ammo": 55,
+    "kulki": 55,
     "piercing arrows": 12,
     "hunting arrows": 4,
     "piercing bolts": 15,
@@ -22,6 +23,15 @@ DEFAULT_PRICES = {
     "ring": 234,
     "gold": 1
 }
+def format_number(number):
+    """Formatuje liczbę z separatorami tysięcy i opcjonalnie skraca duże liczby."""
+    formatted = f"{number:,.2f}".replace(",", " ")  # Dodaje spacje jako separator tysięcy
+    if abs(number) >= 1_000_000:
+        return f"{number / 1_000_000:.2f}kk"
+    elif abs(number) >= 1_000:
+        return f"{number / 1_000:.2f}k"
+    else:
+        return f"{number:.2f}".rstrip('0').rstrip('.') # Usuwa zbędne zera po przecinku
 
 def load_data():
     if os.path.exists(DATA_FILE):
