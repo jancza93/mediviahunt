@@ -5,7 +5,6 @@ from datetime import datetime
 app = Flask(__name__)
 DATA_FILE = "sessions.json"
 
-# Stałe z cenami (możesz przenieść do oddzielnego pliku konfiguracyjnego)
 DEFAULT_PRICES = {
     "uh": 145,
     "sd": 330,
@@ -20,6 +19,8 @@ DEFAULT_PRICES = {
     "piercing bolts": 15,
     "hunting bolts": 5,
     "purity ring [min]": 234,
+    "ring": 234, # Dodaj alias dla "purity ring [min]" jeśli użytkownik wpisze krócej
+    "gold": 1 # Przyjmujemy, że "gold" ma wartość 1
 }
 
 def load_data():
@@ -47,6 +48,33 @@ def parse_supplies(s: str):
             continue
     return result
 
+def parse_loot(s: str):
+    loot = {}
+    for item in s.split(','):
+        try:
+            parts = item.strip().split(' ')
+            if len(parts) >= 3:
+                amount = int(parts[0])
+                name = " ".join(parts[1:-1]).lower() # Obsługa nazw wieloczłonowych
+                value = int(parts[-1])
+                loot[name] = {"amount": amount, "value": value}
+            elif len(parts) == 2:
+                amount = int(parts[0])
+                name = parts[1].lower()
+                # Jeśli nie podano wartości, możemy spróbować użyć domyślnej ceny
+                if name in DEFAULT_PRICES:
+                    loot[name] = {"amount": amount, "value": DEFAULT_PRICES.get(name, 0)}
+                else:
+                    print(f"Uwaga: Nieznany przedmiot '{name}' bez podanej wartości.")
+            elif len(parts) == 3: # ilość nazwa wartość
+                amount = int(parts[0])
+                name = parts[1].lower()
+                value = int(parts[2])
+                loot[name] = {"amount": amount, "value": value}
+        except ValueError:
+            continue
+    return loot
+
 @app.route('/')
 def index():
     return render_template("index.html")
@@ -72,10 +100,11 @@ def submit():
     name = request.form['name']
     start = request.form['start']
     end = request.form['end']
+    loot_str = request.form.get('loot', '') # Pobierz dane o łupie
 
     data = load_data()
     if session_id in data:
-        data[session_id]['players'][name] = {"start": start, "end": end}
+        data[session_id]['players'][name] = {"start": start, "end": end, "loot": parse_loot(loot_str)}
         save_data(data)
     return redirect(url_for('summary', session_id=session_id))
 
@@ -85,14 +114,19 @@ def summary(session_id):
     session = data.get(session_id, {})
     used_run_data = {}
     player_costs = {}
+    player_profit = {}
     total_session_cost = 0
+    total_session_profit = 0
 
     for name, pdata in session.get("players", {}).items():
         start_supplies = parse_supplies(pdata.get("start", ""))
         end_supplies = parse_supplies(pdata.get("end", ""))
+        player_loot = pdata.get("loot", {})
         used_run = {}
         player_cost = 0
+        player_earned = 0
 
+        # Oblicz zużycie i koszt
         all_keys = set(start_supplies.keys()) | set(end_supplies.keys())
         for item_name in all_keys:
             start_count = start_supplies.get(item_name, 0)
@@ -106,14 +140,26 @@ def summary(session_id):
         player_costs[name] = player_cost
         total_session_cost += player_cost
 
+        # Oblicz zysk
+        for item_name, loot_data in player_loot.items():
+            player_earned += loot_data.get("amount", 0) * loot_data.get("value", 0)
+
+        player_profit[name] = player_earned
+        total_session_profit += player_earned
+
+    net_session_profit = total_session_profit - total_session_cost
+
     return render_template(
         "summary.html",
         session=session,
         session_id=session_id,
         used_run_data=used_run_data,
         player_costs=player_costs,
+        player_profit=player_profit,
         total_session_cost=total_session_cost,
-        default_prices=DEFAULT_PRICES  # Możesz przekazać ceny, jeśli chcesz je wyświetlić
+        total_session_profit=total_session_profit,
+        net_session_profit=net_session_profit,
+        default_prices=DEFAULT_PRICES
     )
 
 @app.route('/data/<session_id>')
