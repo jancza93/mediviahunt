@@ -49,6 +49,16 @@
             font-weight: bold;
             color: #ff9800;
         }
+        .profit {
+            font-weight: bold;
+            color: #a7f070;
+        }
+        .net-profit-positive {
+            color: #a7f070;
+        }
+        .net-profit-negative {
+            color: #f07070;
+        }
     </style></head><body>
     <div class="container">
         <h2><span style="color: #66ffcc;">&#128184;</span> Podsumowanie sesji: {{ session_id }}</h2>
@@ -61,6 +71,9 @@
                 <b>Koniec:</b> {{ pdata['end'] }}</p>
                 {% if player_costs.get(name) %}
                     <p class="cost"><b>Koszt gracza:</b> {{ "{:.2f}".format(player_costs[name]) }} gold coins</p>
+                {% endif %}
+                {% if player_profit.get(name) %}
+                    <p class="profit"><b>Zysk gracza:</b> {{ "{:.2f}".format(player_profit[name]) }} gold coins</p>
                 {% endif %}
             </div>
         {% endfor %}
@@ -86,4 +99,6 @@
         {% if total_session_cost > 0 %}
             <h3><span style="color: #66ffcc;">&#128176;</span> Łączny koszt sesji: <span class="cost">{{ "{:.2f}".format(total_session_cost) }}</span> gold coins</h3>
         {% endif %}
-    </div></body></html>
+
+        {% if total_session_profit > 0 %}
+            <h3><span style="color: #66ffcc;">&#128176;</span>
